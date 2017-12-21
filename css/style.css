@@ -1,0 +1,25 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+#reference{
+  pointer-events: none;
+  position: relative;
+  width: 400px;
+}
+#reference img{
+  width: 100%;
+}
+#change {
+  margin: 0;
+  padding: 0;
+  width: 400px;
+  font-size: 0;
+  overflow: hidden;
+  position: absolute;
+  transform-origin: center center;
+}
+
+#change video{
+  width: 100%;
+}
