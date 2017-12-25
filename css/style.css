@@ -2,10 +2,17 @@
   margin: 0;
   padding: 0;
 }
+.app{
+  padding: 15px;
+}
+.operating-area{
+  position: relative;
+}
 #reference{
   pointer-events: none;
   position: relative;
   width: 400px;
+  z-index: 1;
 }
 #reference img{
   width: 100%;
@@ -18,6 +25,9 @@
   overflow: hidden;
   position: absolute;
   transform-origin: center center;
+  left: 0;
+  top: 0;
+  z-index: 2;
 }
 
 #change video{
