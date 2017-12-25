@@ -1,28 +1,28 @@
 
-makeTransformable('#change', function (element, H) {
-  var i, j
-  // console.log($(element).css('transform'))
-  return $('.matrix3d-value').
-    html($('<table>').
-      append($('<tr>').html($('<td>').text('matrix3d('))).
-      append((function () {
-        var k, results
-        results = []
-        for (i = k = 0; k < 4; i = ++k) {
-          results.push($('<tr>').append((function () {
-            var l, results1
-            results1 = []
-            for (j = l = 0; l < 4; j = ++l) {
-              results1.push(
-                $('<td>').text(H[j][i] + ((i === j && j === 3) ? '' : ',')))
-            }
-            return results1
-          })()))
-        }
-        return results
-      })()).
-      append($('<tr>').html($('<td>').text(')'))))
-})
+// makeTransformable('#change', function (element, H) {
+//   var i, j
+//   // console.log($(element).css('transform'))
+//   return $('.matrix3d-value').
+//     html($('<table>').
+//       append($('<tr>').html($('<td>').text('matrix3d('))).
+//       append((function () {
+//         var k, results
+//         results = []
+//         for (i = k = 0; k < 4; i = ++k) {
+//           results.push($('<tr>').append((function () {
+//             var l, results1
+//             results1 = []
+//             for (j = l = 0; l < 4; j = ++l) {
+//               results1.push(
+//                 $('<td>').text(H[j][i] + ((i === j && j === 3) ? '' : ',')))
+//             }
+//             return results1
+//           })()))
+//         }
+//         return results
+//       })()).
+//       append($('<tr>').html($('<td>').text(')'))))
+// })
 
 var refImg = document.querySelector('#reference img')
 var changeImg = document.querySelector('change *')
@@ -73,7 +73,7 @@ class TransformEl {
           cursor: 'move',
           position: 'absolute',
           zIndex: 100000
-        }))
+        }).appendTo('body'))
       }
       this.controlPoints = results
 
@@ -85,10 +85,10 @@ class TransformEl {
       this.originalPos = originPos
     }
     const ref = ['left top', 'left bottom', 'right top', 'right bottom']
-    this.controlPoints.each((i, $el) => {
+    $(this.controlPoints).each((i, $el) => {
       $el.position({
         at: ref[i],
-        of: this.$el[0],
+        of: _this.$el[0],
         collision: 'none'
       })
     })
@@ -180,15 +180,15 @@ class TransformEl {
         y: this.originalPos[i][1] - this.originalPos[0][1]
       })
     }
-
+    console.log(from)
     const to = []
-    for(let i = 0; i < targetPos;i++){
+    for(let j = 0; j < targetPos;j++){
       to.push({
-        x: targetPos[i][0] -this.originalPos[0][0],
-        y: targetPos[i][1] -this.originalPos[0][1]
+        x: targetPos[j][0] - this.originalPos[0][0],
+        y: targetPos[j][1] - this.originalPos[0][1]
       })
     }
-
+    console.log(to)
     const H = this.getTransform(from,to)
 
 
