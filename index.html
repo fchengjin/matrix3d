@@ -13,29 +13,35 @@
   <div class="operating-area">
     <div id="reference"><img src="demosrc/img.png"></div>
     <div id="change" class="video-wrapper">
-      <video src="demosrc/video.mp4"  autoplay loop></video>
+      <video src="demosrc/video.mp4" autoplay loop></video>
     </div>
   </div>
-  <div class="matrix3d-value"></div>
+  <table class="matrix3d-value"></table>
   <div class="form-wrapper">
     <h3 class="form-name">参照图片</h3>
+    <ul class="tips">
+      <li>1、width和height如果不设置或者小于等于0,则默认为auto</li>
+      <li>2、上传图片的优先级大于图片url</li>
+      <li>3、视频的width/height无法非等比更改，此处更改的是video-wrapper 的width/height，视频超出部分将会隐藏</li>
+    </ul>
     <form id="reference-form">
       <div class="form-group">
         <label for="reference-width">width: </label><input type="number" id="reference-width" name="reference-width" min="0">
         px
       </div>
       <div class="form-group">
-        <label for="reference-height">width: </label><input type="number" id="reference-height" name="reference-height" min="0">
-        px
+        <label for="reference-height">height: </label><input type="number" id="reference-height"
+                                                             name="reference-height" min="0"> px
       </div>
       <div class="form-group">
         <label for="reference-url">图片url: </label><input type="text" id="reference-url" name="reference-url">
       </div>
       <div class="form-group">
-        <label for="reference-img">上传图片: </label><input type="file" id="reference-img">
+        <label for="reference-upload">上传图片: </label><input type="file" id="reference-upload" name="reference-upload"
+                                                        accept="image/*">
       </div>
       <div class="form-group">
-        <button type="submit">重置</button>
+        <button type="submit" id="reference-reset-btn">重置</button>
       </div>
     </form>
     <h3 class="form-name">需要改变的图片</h3>

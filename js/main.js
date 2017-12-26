@@ -1,54 +1,3 @@
-
-// makeTransformable('#change', function (element, H) {
-//   var i, j
-//   // console.log($(element).css('transform'))
-//   return $('.matrix3d-value').
-//     html($('<table>').
-//       append($('<tr>').html($('<td>').text('matrix3d('))).
-//       append((function () {
-//         var k, results
-//         results = []
-//         for (i = k = 0; k < 4; i = ++k) {
-//           results.push($('<tr>').append((function () {
-//             var l, results1
-//             results1 = []
-//             for (j = l = 0; l < 4; j = ++l) {
-//               results1.push(
-//                 $('<td>').text(H[j][i] + ((i === j && j === 3) ? '' : ',')))
-//             }
-//             return results1
-//           })()))
-//         }
-//         return results
-//       })()).
-//       append($('<tr>').html($('<td>').text(')'))))
-// })
-
-var refImg = document.querySelector('#reference img')
-var changeImg = document.querySelector('change *')
-
-//上传
-
-//远程加载
-function changeReadyByUrl (node, callback) {
-  var timer = null
-  switch (node.nodeName) {
-    case 'img':
-      timer = setInterval(function () {
-        if (node.complete) {
-          callback(node)
-          clearInterval(timer)
-        }
-      }, 50)
-      break
-    case 'video':
-      node.addEventListener('loadedmetadata', callback(node), false)
-      break
-    default:
-      return false
-  }
-}
-
 class TransformEl {
   constructor (el,obj) {
     if (el instanceof $) {
@@ -63,8 +12,9 @@ class TransformEl {
   }
 
   init () {
+    this.$el.removeAttr('style')
     const _this = this
-    if (this.controlPoints.length !== 4 || this.originalPos.length !== 4) {
+    if (this.controlPoints.length !== 4) {
       const results = []
       for (let i = 0; i < 4; i++) {
         results.push($('<div>').css({
@@ -76,49 +26,79 @@ class TransformEl {
         }).appendTo('body'))
       }
       this.controlPoints = results
+      //绑定draggable
+      $(this.controlPoints).draggable({
+        start(){
+          _this.handler && _this.handler.onDragStart && _this.handler.onDragStart(_this)
+          return _this.$el.css('pointer-events', 'none')
+        },
+        drag(){
+          //应用变换
+          const targetPos = []
 
-      const originPos = []
-      for (let i = 0; i < results.length; i++) {
-        const temp = results[i]
-        originPos.push([temp.offset().left, temp.offset().top])
-      }
-      this.originalPos = originPos
+          _this.controlPoints.forEach(function ($el, index) {
+            targetPos.push([$el.offset().left,$el.offset().top])
+          })
+          const cb = (_this.handler && _this.handler.onDragging) ? _this.handler.onDragging : null
+          _this.applyTransform(targetPos,cb)
+        },
+        stop(){
+          const targetPos = []
+          for (let i = 0; i < 4;i++) {
+            const temp = _this.controlPoints[i]
+            targetPos.push([temp.offset().left, temp.offset().top])
+          }
+          const cb = (_this.handler && _this.handler.onDragStop) ? _this.handler.onDragStop : null
+          _this.applyTransform(targetPos,cb)
+        }
+      })
     }
+
     const ref = ['left top', 'left bottom', 'right top', 'right bottom']
+    const originPos = []
     $(this.controlPoints).each((i, $el) => {
       $el.position({
         at: ref[i],
         of: _this.$el[0],
         collision: 'none'
       })
+      originPos.push([$el.offset().left, $el.offset().top])
     })
-    //绑定draggable
-    $(this.controlPoints).draggable({
-      start(){
-        _this.handler && _this.handler.onDragStart && _this.handler.onDragStart(_this)
-        return _this.$el.css('pointer-events', 'none')
-      },
-      drag(){
-        //应用变换
-        const targetPos = []
-        for (let i = 0; i < 4;i++) {
-          const temp = _this.controlPoints[i]
-          targetPos.push([temp.offset().left, temp.offset().top])
-        }
+    this.originalPos = originPos
 
-        const cb = (_this.handler && _this.handler.onDragging) ? _this.handler.onDragging : null
-        _this.applyTransform(targetPos,cb)
-      },
-      stop(){
-        const targetPos = []
-        for (let i = 0; i < 4;i++) {
-         const temp = _this.controlPoints[i]
-          targetPos.push([temp.offset().left, temp.offset().top])
-        }
-        const cb = (_this.handler && _this.handler.onDragStop) ? _this.handler.onDragStop : null
-        _this.applyTransform(targetPos,cb)
+  }
+  applyTransform (targetPos, callback) {
+    const from = []
+    const to = []
+    for(let i =0 ;i < this.originalPos.length; i++){
+      from.push({
+        x: this.originalPos[i][0] - this.originalPos[0][0],
+        y: this.originalPos[i][1] - this.originalPos[0][1]
+      })
+    }
+    for(let j = 0; j < targetPos.length;j++){
+      to.push({
+        x: targetPos[j][0] - this.originalPos[0][0],
+        y: targetPos[j][1] - this.originalPos[0][1]
+      })
+    }
+    const H = this.getTransform(from,to)
+
+
+    const matrix3d = []
+    for (let i = 0; i < 4;i++) {
+      const temp = []
+      for (let j = 0; j < 4;j++) {
+        temp.push(H[j][i].toFixed(20))
       }
+      matrix3d.push(temp)
+    }
+    this.matrix3d = matrix3d
+    this.$el.css({
+      'transform': 'matrix3d(' + matrix3d.join(',') + ')',
+      'transform-origin': '0 0'
     })
+    return typeof callback === 'function' ? callback(this, H) : void 0
   }
 
   getTransform (from, to) {
@@ -149,8 +129,8 @@ class TransformEl {
     }
 
     for (let j = 0; j < 4; j++) {
-      B.push(to[i].x)
-      B.push(to[i].y)
+      B.push(to[j].x)
+      B.push(to[j].y)
     }
 
     const h = numeric.solve(A, B)
@@ -163,48 +143,88 @@ class TransformEl {
 
     let lhs, rhs, k_i
     for (let k = 0; k < 4; k++) {
-      lhs = numeric.dot(H, [from[i].x, from[i].y, 0, 1])
+      lhs = numeric.dot(H, [from[k].x, from[k].y, 0, 1])
       k_i = lhs[3]
-      rhs = numeric.dot(k_i, [to[i].x, to[i].y, 0, 1])
+      rhs = numeric.dot(k_i, [to[k].x, to[k].y, 0, 1])
       console.assert(numeric.norm2(numeric.sub(lhs, rhs)) < 1e-9, 'Not equal:',
         lhs, rhs)
     }
     return H
   }
+}
 
-  applyTransform (targetPos, callback) {
-    const from = []
-    for(let i =0 ;i < this.originalPos.length; i++){
-      from.push({
-        x: this.originalPos[i][0] - this.originalPos[0][0],
-        y: this.originalPos[i][1] - this.originalPos[0][1]
-      })
-    }
-    console.log(from)
-    const to = []
-    for(let j = 0; j < targetPos;j++){
-      to.push({
-        x: targetPos[j][0] - this.originalPos[0][0],
-        y: targetPos[j][1] - this.originalPos[0][1]
-      })
-    }
-    console.log(to)
-    const H = this.getTransform(from,to)
-
-
-    const matrix3d = []
-    for (let i = 0; i < 4;i++) {
-      const temp = []
-      for (let j = 0; j < 4;j++) {
-        temp.push(H[j][i].toFixed(20))
+const changeWrapper = document.querySelector('#change')
+const valueShow = document.querySelector('.matrix3d-value')
+var matrix3dEl = new TransformEl(changeWrapper,{
+  onDragging: function (_this, matrix3d) {
+    let s = ''
+    for(let i=0;i <matrix3d.length;i++){
+      s += '<tr>'
+      for (let j = 0;j < matrix3d[i].length;j++){
+        const temp = i === matrix3d.length -1 && j === matrix3d[i].length -1 ? '': ','
+        s += '<td>' + matrix3d[i][j] + temp + '</td>'
       }
-      matrix3d.push(temp)
+      s += '</tr>'
     }
-    this.matrix3d = matrix3d
-    this.$el.css({
-      'transform': 'matrix3d(' + matrix3d.join(',') + ')',
-      'transform-origin': '0 0'
-    })
-    return typeof callback === 'function' ? callback(this, H) : void 0
+    valueShow.innerHTML = s
+  }
+})
+var referenceImg = document.querySelector('#reference img')
+var changeImg = document.querySelector('#change *')
+var referenceUpload = document.querySelector('#reference-upload')
+var referenceResetBtn = document.querySelector('#reference-reset-btn')
+var changeResetBtn = document.querySelector('#change-reset-btn')
+//上传
+function changeReadyByUpload (fileinput, callback) {
+  fileinput.addEventListener('change',function(){
+    if(!fileinput.value){
+      return
+    }
+    //获取file引用
+    var file = this.files[0]
+    console.log(file)
+    //读取file
+    var reader = new FileReader()
+    //以DataURL的形式读取文件:
+    reader.readAsDataURL(file)
+    reader.onload = function (ev) {
+      var data = ev.target.result
+      referenceImg.src = data
+      changeReadyByUrl(referenceImg,function () {
+        console.log()
+      })
+    }
+  })
+}
+//远程加载完成后触发回调
+function changeReadyByUrl (node, callback) {
+  var timer = null
+  switch (node.nodeName) {
+    case 'img':
+      timer = setInterval(function () {
+        if (node.complete) {
+          callback(node)
+          clearInterval(timer)
+        }
+      }, 50)
+      break
+    case 'video':
+      node.addEventListener('loadedmetadata', callback(node), false)
+      break
+    default:
+      return false
   }
 }
+
+//定时器超时处理
+function handleTimeout(timer,timeout){
+  timeout = timeout || 5000
+  setTimeout(function () {
+    if(timer){
+      clearInterval(timer)
+      alert('无法获取资源')
+    }
+  },timeout)
+}
+
+changeReadyByUpload(referenceUpload)
