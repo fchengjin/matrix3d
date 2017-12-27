@@ -47,7 +47,19 @@
     <h3 class="form-name">需要改变的图片</h3>
     <form id="change-form">
       <div class="form-group">
-
+        <label for="change-width">width: </label><input type="number" id="change-width" name="change-width"
+                                                       min="0">px
+      </div>
+      <div class="form-group">
+        <label for="change-height">height: </label><input type="number" id="change-height"
+                                                             name="change-height" min="0"> px
+      </div>
+      <div class="form-group">
+        <label for="change-url">图片url: </label><input type="text" id="change-url" name="change-url">
+      </div>
+      <div class="form-group">
+        <label for="change-upload">上传图片: </label><input type="file" id="change-upload" name="change-upload"
+                                                           accept="image/*,video/*">
       </div>
     </form>
   </div>

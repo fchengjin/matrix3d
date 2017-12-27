@@ -5,6 +5,12 @@
 .app{
   padding: 15px;
 }
+.tips{
+  list-style: none;
+  color: rgba(0,0,0,.6);
+  font-size: 12px;
+  line-height: 1.8;
+}
 .operating-area{
   position: relative;
 }

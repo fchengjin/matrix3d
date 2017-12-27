@@ -44,10 +44,9 @@ class TransformEl {
         },
         stop(){
           const targetPos = []
-          for (let i = 0; i < 4;i++) {
-            const temp = _this.controlPoints[i]
-            targetPos.push([temp.offset().left, temp.offset().top])
-          }
+          _this.controlPoints.forEach(function ($el, index) {
+            targetPos.push([$el.offset().left,$el.offset().top])
+          })
           const cb = (_this.handler && _this.handler.onDragStop) ? _this.handler.onDragStop : null
           _this.applyTransform(targetPos,cb)
         }
@@ -98,7 +97,7 @@ class TransformEl {
       'transform': 'matrix3d(' + matrix3d.join(',') + ')',
       'transform-origin': '0 0'
     })
-    return typeof callback === 'function' ? callback(this, H) : void 0
+    return typeof callback === 'function' ? callback(this, matrix3d) : void 0
   }
 
   getTransform (from, to) {
@@ -174,32 +173,50 @@ var changeImg = document.querySelector('#change *')
 var referenceUpload = document.querySelector('#reference-upload')
 var referenceResetBtn = document.querySelector('#reference-reset-btn')
 var changeResetBtn = document.querySelector('#change-reset-btn')
+var changeUpload = document.querySelector('#change-upload')
+var changeWrapper = document.querySelector('#change')
 //上传
-function changeReadyByUpload (fileinput, callback) {
+function getUploadUrl (fileinput, callback) {
   fileinput.addEventListener('change',function(){
     if(!fileinput.value){
       return
     }
     //获取file引用
     var file = this.files[0]
-    console.log(file)
-    //读取file
-    var reader = new FileReader()
-    //以DataURL的形式读取文件:
-    reader.readAsDataURL(file)
-    reader.onload = function (ev) {
-      var data = ev.target.result
-      referenceImg.src = data
-      changeReadyByUrl(referenceImg,function () {
-        console.log()
-      })
+    //FileReader 无法读取大文件
+    // //读取file
+    // var reader = new FileReader()
+    // //以DataURL的形式读取文件:
+    // reader.readAsDataURL(file)
+    // reader.onload = function (ev) {
+    //   var data = ev.target.result
+    //   referenceImg.src = data
+    //   changeReadyByUrl(referenceImg,function () {
+    //     console.log()
+    //   })
+    // }
+    var blob = new Blob([file]), // 文件转化成二进制文件
+      url = URL.createObjectURL(blob); //转化成url
+    if (/image/g.test(file.type)) {
+      var img = $('<img src="' + url + '">');
+      img[0].onload = function(e) {
+        URL.revokeObjectURL(this.src);  // 释放createObjectURL创建的对象
+      }
+      $('.preview2').html('').append(img);
+    } else if (/video/g.test(file.type)) {
+      var video = $('<video controls src="' + url + '">');
+      $('.preview2').html('').append(video);
+      video[0].onload = function(e) {
+        URL.revokeObjectURL(this.src);  // 释放createObjectURL创建的对象
+      }
     }
+
   })
 }
 //远程加载完成后触发回调
 function changeReadyByUrl (node, callback) {
   var timer = null
-  switch (node.nodeName) {
+  switch (node.nodeName.toLowerCase()) {
     case 'img':
       timer = setInterval(function () {
         if (node.complete) {
@@ -227,4 +244,7 @@ function handleTimeout(timer,timeout){
   },timeout)
 }
 
-changeReadyByUpload(referenceUpload)
+getUploadUrl(referenceUpload)
+getUploadUrl(changeUpload,function () {
+
+})
