@@ -1,15 +1,26 @@
 *{
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+.ui-draggable .ui-dialog-titlebar {
+  cursor: move;
+}
+.ui-draggable-handle {
+  -ms-touch-action: none;
+  touch-action: none;
 }
 .app{
   padding: 15px;
+  padding-bottom: 300px;
 }
 .tips{
-  list-style: none;
   color: rgba(0,0,0,.6);
   font-size: 12px;
   line-height: 1.8;
+  padding-left: 14px;
+  list-style-type: decimal;
+  margin-bottom: 10px;
 }
 .operating-area{
   position: relative;
@@ -20,25 +31,35 @@
   width: 400px;
   z-index: 1;
 }
-#reference img{
-  width: 100%;
-}
+
 #change {
   margin: 0;
   padding: 0;
-  width: 400px;
   font-size: 0;
   overflow: hidden;
   position: absolute;
-  transform-origin: center center;
   left: 0;
   top: 0;
   z-index: 2;
 }
-#change img{
+
+.form-area{
+  position: fixed;
   width: 100%;
+  left: 0;
+  background: #ccc;
+  bottom: 0;
+  z-index: 99;
 }
-#change video{
-  width: 100%;
-  height: 100%;
+.form-wrapper{
+  width: 50%;
+  display: inline-block;
+  padding: 20px 15px;
+  vertical-align: top;
+}
+.form-wrapper h3{
+  margin-bottom: 10px;
+}
+.form-group{
+  margin-bottom: 5px;
 }

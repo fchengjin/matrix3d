@@ -1,2 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
-.idea
+.idea/
+node_modules/
+yarn.lock/
+.gitignore
+package.json
+.babelrc
+.git/

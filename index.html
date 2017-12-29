@@ -4,64 +4,70 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
   <link rel="stylesheet" type="text/css" href="css/style.css">
   <title>快速获得matrix3d的小工具</title>
 </head>
 <body>
 <div class="app">
   <div class="operating-area">
-    <div id="reference"><img src="demosrc/img.png"></div>
+    <img src="demosrc/img.png" id="reference">
     <div id="change" class="video-wrapper">
       <video src="demosrc/video.mp4" autoplay loop></video>
     </div>
   </div>
   <table class="matrix3d-value"></table>
-  <div class="form-wrapper">
-    <h3 class="form-name">参照图片</h3>
-    <ul class="tips">
-      <li>1、width和height如果不设置或者小于等于0,则默认为auto</li>
-      <li>2、上传图片的优先级大于图片url</li>
-      <li>3、视频的width/height无法非等比更改，此处更改的是video-wrapper 的width/height，视频超出部分将会隐藏</li>
-    </ul>
-    <form id="reference-form">
-      <div class="form-group">
-        <label for="reference-width">width: </label><input type="number" id="reference-width" name="reference-width" min="0">
-        px
-      </div>
-      <div class="form-group">
-        <label for="reference-height">height: </label><input type="number" id="reference-height"
-                                                             name="reference-height" min="0"> px
-      </div>
-      <div class="form-group">
-        <label for="reference-url">图片url: </label><input type="text" id="reference-url" name="reference-url">
-      </div>
-      <div class="form-group">
-        <label for="reference-upload">上传图片: </label><input type="file" id="reference-upload" name="reference-upload"
-                                                        accept="image/*">
-      </div>
-      <div class="form-group">
-        <button type="submit" id="reference-reset-btn">重置</button>
-      </div>
-    </form>
-    <h3 class="form-name">需要改变的图片</h3>
-    <form id="change-form">
-      <div class="form-group">
-        <label for="change-width">width: </label><input type="number" id="change-width" name="change-width"
-                                                       min="0">px
-      </div>
-      <div class="form-group">
-        <label for="change-height">height: </label><input type="number" id="change-height"
-                                                             name="change-height" min="0"> px
-      </div>
-      <div class="form-group">
-        <label for="change-url">图片url: </label><input type="text" id="change-url" name="change-url">
-      </div>
-      <div class="form-group">
-        <label for="change-upload">上传图片: </label><input type="file" id="change-upload" name="change-upload"
-                                                           accept="image/*,video/*">
-      </div>
-    </form>
+  <div class="form-area">
+    <div class="form-wrapper">
+      <h3 class="form-name">参照图片</h3>
+      <ol class="tips">
+        <li>width和height如果不设置或者小于等于0,则默认为auto</li>
+        <li>上传图片的优先级大于图片url</li>
+      </ol>
+      <form id="reference-form">
+        <div class="form-group">
+          <label for="reference-width">width: </label><input type="number" id="reference-width" name="width" min="0"> px
+        </div>
+        <div class="form-group">
+          <label for="reference-height">height: </label><input type="number" id="reference-height" name="height" min="0">
+          px
+        </div>
+        <div class="form-group">
+          <label for="reference-url">图片url: </label><input type="text" id="reference-url" name="url">
+        </div>
+        <div class="form-group">
+          <label for="reference-upload">上传图片: </label><input type="file" id="reference-upload" name="upload"
+                                                             accept="image/*">
+        </div>
+        <div class="form-group">
+          <button type="submit" id="reference-submit-btn">提交</button>
+          <button type="reset" id="reference-reset-btn">重置</button>
+        </div>
+      </form>
+    </div><div class="form-wrapper">
+      <h3 class="form-name">需要做matrix3d变换的图片或视频</h3>
+      <ol class="tips">
+        <li>width和height如果不设置或者小于等于0,则默认为auto</li>
+        <li>视频的width/height无法非等比更改,因此建议视频的width/height只修改一个值</li>
+      </ol>
+      <form id="change-form">
+        <div class="form-group">
+          <label for="change-width">width: </label><input type="number" id="change-width" name="width"
+                                                          min="0">px
+        </div>
+        <div class="form-group">
+          <label for="change-height">height: </label><input type="number" id="change-height"
+                                                            name="height" min="0"> px
+        </div>
+        <div class="form-group">
+          <label for="change-upload">上传图片或视频: </label><input type="file" id="change-upload" name="upload"
+                                                          accept="image/*,video/*">
+        </div>
+        <div class="form-group">
+          <button type="submit" id="change-submit-btn">提交</button>
+          <button type="reset" id="change-reset-btn">重置</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 <script type="text/javascript" src="js/jquery.min.js"></script>
